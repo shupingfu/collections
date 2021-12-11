@@ -24,7 +24,6 @@ public class RandomUtil {
     public static void main(String[] args) {
         long l = System.currentTimeMillis();
 
-        // todo 测试random和ThreadLocalRandom效率
         for (int i = 0; i < 100000; i++) {
             new Thread(() ->{
 //                int i1 = new Random().nextInt();
