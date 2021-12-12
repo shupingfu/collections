@@ -1,4 +1,10 @@
+## todo
+
+- [ ] 
+
+
 ## 中文（简体/繁体）转拼音 ``pinyin4j``
+
 ```xml
         <!-- https://mvnrepository.com/artifact/com.belerweb/pinyin4j -->
         <dependency>
@@ -204,4 +210,102 @@ log4j2.formatMsgNoLookups=true
 <log4j2.version>2.15.0</log4j2.version>
 3.打开idea自带的依赖图，找出所有依赖log4j-api和log4j-core的包，exclusion掉这两个依赖。（推荐插件maven helper）。
 ```
+
+
+
+## 轻量的表达式引擎``aviator`` 
+
+```xml
+       <!-- https://mvnrepository.com/artifact/com.googlecode.aviator/aviator -->
+        <dependency>
+            <groupId>com.googlecode.aviator</groupId>
+            <artifactId>aviator</artifactId>
+            <version>5.3.0</version>
+        </dependency>
+```
+
+```java
+public static void main(String[] args) {
+        // 1、算术表达式
+        Long result = (Long) AviatorEvaluator.execute("1 + 2 + 3");
+        System.out.println(result); //6
+
+        // 2、逻辑表达式
+        Boolean result2 = (Boolean)AviatorEvaluator.execute("3>1 && 2!=4");
+        System.out.println(result2);//true
+
+        // 3、变量和字符串相加 变量默认为null
+        Map<String, Object> env = new HashMap<>();
+        env.put("name","shuping");
+        String result3 = (String)AviatorEvaluator.execute(" 'hello ' + name ", env);
+        System.out.println(result3);
+
+        // 4、三元表达式 语法糖
+        String result5=(String)AviatorEvaluator.execute("3>0 ? 'yes':'no'");
+        System.out.println(result5);
+
+        // 5、函数调用
+        System.out.println(AviatorEvaluator.execute("string.length('hello')"));
+        System.out.println(AviatorEvaluator.execute("string.contains('hello','h')"));
+        System.out.println(AviatorEvaluator.execute("math.pow(-3,2)"));
+        System.out.println(AviatorEvaluator.execute("math.sqrt(14.0)"));
+        System.out.println(AviatorEvaluator.execute("math.sin(20)"));
+
+        // 使用
+        User user = new User();
+        user.setName("shuping");
+        user.setAge(25);
+
+        HashMap<String, Object> userEnv = new HashMap<String, Object>() {{
+            put("user", user);
+        }};
+        String expression = "string.length(user.name) > 0 && string.length(user.name) < 20 && user.age > 0 && user.age < 100";
+        Object execute = AviatorEvaluator.execute(expression, userEnv, true);
+        System.out.println(execute);
+
+    }
+/**
+ * 自定义函数
+ */
+class AviatorFunc extends AbstractFunction {
+
+    public static void main(String[] args) {
+        User user = new User();
+        user.setName("shuping");
+        user.setAge(25);
+
+        HashMap<String, Object> userEnv = new HashMap<String, Object>() {{
+            put("user", user);
+        }};
+
+        // 注册定义函数
+        AviatorEvaluator.addFunction(new AviatorFunc());
+        Object o = AviatorEvaluator.execute("aviatorFunc(user)", userEnv);
+        User u = o instanceof User ? (User) o : null;
+        System.out.println(u);
+    }
+
+    @Override
+    public String getName() {
+        return "aviatorFunc";
+    }
+
+    @Override
+    public AviatorObject call(Map<String, Object> env, AviatorObject arg1) {
+        Object o = FunctionUtils.getJavaObject(arg1, env);
+        User user = o instanceof User ? (User) o : null;
+
+        assert user != null;
+        if (user.getName().length() > 0 && user.getName().length() < 20) {
+            user.setStatus("合法");
+        }
+        user.setStatus(user.getName().length() > 0 && user.getName().length() < 20 ? "合法" : "不合法");
+        return AviatorRuntimeJavaType.valueOf(user);
+    }
+}
+```
+
+总结：没啥卵用，脱裤子放屁的玩意儿。
+
+## ``easyexcel`` 
 
