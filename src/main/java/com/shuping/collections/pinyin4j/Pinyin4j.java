@@ -26,6 +26,42 @@ public class Pinyin4j {
 
         String s = PinyinHelper.toHanYuPinyinString("律师", format, " ", true);
         System.out.println(s);
+
+        System.out.println(PinyinHelper.toHanYuPinyinString("建 筑 工 程", format, " ", true));
+        System.out.println(String.join(" ", "建筑工程技术".split("")));
+        System.out.println(firsPinyin("建筑工程技术"));
+    }
+
+    /**
+     * 获取中文拼音首字母大写
+     *
+     * @param chinese 中文
+     * @return 全拼音首字母大写
+     */
+    private static String firsPinyin(String chinese) {
+        HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+        format.setCaseType(HanyuPinyinCaseType.UPPERCASE);
+        format.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+        format.setVCharType(HanyuPinyinVCharType.WITH_U_AND_COLON);
+
+        chinese = String.join(" ", chinese.split(""));
+        String pinyin = null;
+        try {
+            pinyin = PinyinHelper.toHanYuPinyinString(chinese, format, "$", true);
+        } catch (BadHanyuPinyinOutputFormatCombination badHanyuPinyinOutputFormatCombination) {
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        if (pinyin != null) {
+            char[] chars = pinyin.toCharArray();
+            stringBuilder.append(chars[0]);
+            for (int i = 0; i < chars.length; i++) {
+                if (chars[i] == '$' && chars[i+1] == ' ') {
+                    stringBuilder.append(chars[i + 2]);
+                }
+            }
+        }
+        return stringBuilder.toString();
     }
 
 }
